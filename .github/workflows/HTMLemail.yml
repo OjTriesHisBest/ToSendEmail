@@ -1,0 +1,71 @@
+import smtplib, ssl
+from email import encoders #I don't know what this does
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+
+sender = "email@email.com"
+receiver = "email2@email.com"
+
+course_name = "Intro to politics"
+
+message = MIMEMultipart("alternative")
+message["Subject"] = f" 'Course reminder: {course_name}'"
+message["From"] = sender
+message["To"] = receiver
+
+text = '''Hello,
+I sure hope this works.'''
+
+html ='''\
+<p style="font-size:12pt;font-family:Times New Roman,serif;margin:0;"><span style="color:black;font-size:14pt;">We look forward to your <span class="markvrqu3hoc9" data-markjs="true" data-ogab="" data-ogac="" data-ogsb="" data-ogsc="">course</span> on <strong>TEST</strong><strong>&nbsp;</strong>from <strong>10am – 12pm. &nbsp;</strong>Your session is taking place at <strong>TEST ADDRESS</strong><strong><span style="background-color:white;">.&nbsp;</span></strong></span></p>
+<p style="font-size:12pt;font-family:Times New Roman,serif;margin:0;"><span style="color:black;font-size:14pt;">I attach here the contact list for the sessions – please use it if you wish to distribute slides or any additional resources related to the session.</span></p>
+<p style="font-size:12pt;font-family:Times New Roman,serif;margin:0;"><span style="color:black;font-size:14pt;">As we do not close the sessions, we would appreciate if you could take a scan/ photo of the register and send it to us at hello@email.com</span><span style="color:#1F497D;font-size:14pt;">&nbsp;</span><span style="color:black;font-size:14pt;">immediately after the session.&nbsp;</span></p>
+<p style="font-size:12pt;font-family:Times New Roman,serif;margin:0;"><span style="color:black;font-size:14pt;">We are working to improve the quality of our reporting data, therefore, please include in your presentations:</span></p>
+<p style="font-size:12pt;font-family:Times New Roman,serif;text-indent:-18pt;margin-right:0;margin-bottom:0;margin-left:36pt;"><span style="font-size:10pt;font-family:Symbol;">·<span style="font-size:7pt;font-family:Times New Roman;">&nbsp; &nbsp; &nbsp; &nbsp;</span><span style="font-size: 18px; font-family: &quot;Times New Roman&quot;;">A</span></span><span style="font-size:14pt;">&nbsp;<span class="mark5idx1soqs" data-markjs="true" data-ogab="" data-ogac="" data-ogsb="" data-ogsc="">reminder</span> to sign the register which is also important for Tier 4 visa Students&nbsp;</span></p>
+<p style="font-size:12pt;font-family:Times New Roman,serif;text-indent:-18pt;margin-right:0;margin-bottom:0;margin-left:36pt;"><span style="color:black;font-size:10pt;font-family:Symbol;">·<span style="font-size:7pt;font-family:Times New Roman;">&nbsp; &nbsp; &nbsp; &nbsp;</span><span style="font-size: 18px; font-family: &quot;Times New Roman&quot;;">A</span></span><span style="color:black;font-size:14pt;">n invitation to complete the feedback form, sent electronically after the session (in the final slide).</span></p>
+<p style="font-size:12pt;font-family:Times New Roman,serif;margin:0;"><span style="color:black;font-size:14pt;">We hope the session goes well.&nbsp;</span></p>
+<p style="font-size:12pt;font-family:Times New Roman,serif;margin:0;"><span style="color:black;font-size:14pt;">Kind regards,&nbsp;</span></p>
+<p style="font-size:12pt;font-family:Times New Roman,serif;margin:0;"><span style="color:black;font-size:14pt;">The L&amp;D team&nbsp;</span></p>
+<p style="font-size:12pt;font-family:Times New Roman,serif;margin:0;"><span style="color:black;font-size:14pt;">university</span></p>'''
+
+part1 = MIMEText(text, "plain")
+part2 = MIMEText(html, "html")
+
+message.attach(part1)
+message.attach(part2)
+
+filename = "hello.xlsx"
+
+with open(filename, "rb") as attachment:
+    part = MIMEBase("application", "octet-stream") #what is octet-stream?
+    part.set_payload(attachment.read())
+
+encoders.encode_base64(part)
+
+part.add_header(
+    "Content-Disposition",
+    f"attachment; filename= {filename}",
+)
+
+smtpObj = smtplib.SMTP('smtp.office365.com', 587)
+type(smtpObj)
+#Connects to the outlook SMTP server
+
+smtpObj.ehlo()
+#Says "hello" to the server
+
+smtpObj.starttls()
+
+smtpObj.ehlo()
+
+smtpObj.login('email@email.com', input("Please enter password: "))
+
+message.attach(part)
+text = message.as_string()
+
+
+smtpObj.sendmail(sender, receiver, text)
+
+smtpObj.quit()
+print('Email has been sent!')
+#Tells me in the terminal it's now complete
